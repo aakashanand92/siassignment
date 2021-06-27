@@ -18,6 +18,7 @@ mvn clean install -U
 
 This is project is configured to use MySQL as a database , 
 Default Settings -
+
 db - siassignment
 
 url - localhost:3306
