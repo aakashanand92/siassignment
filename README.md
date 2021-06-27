@@ -16,15 +16,12 @@ mvn clean install -U
 
 ## DB Setup -
 
-This is project is configured to use MySQL as a database , 
-Default Settings -
+This is project is configured to use MySQL as a database ,  
 
-db - siassignment
-
-url - localhost:3306
-
-username - root
-
+Default Settings -  
+db - siassignment  
+url - localhost:3306  
+username - root  
 password - password
 
 
