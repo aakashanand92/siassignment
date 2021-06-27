@@ -27,4 +27,15 @@ public class AppUtility {
         return jsonStr;
     }
 
+    public static Object convertJSONToObject(String json, Class klass) {
+        ObjectMapper mapper = new ObjectMapper();
+        Object retVal = null;
+        try {
+            retVal = mapper.readValue(json, klass);
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
+        return retVal;
+    }
+
 }

@@ -2,31 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Edit</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="./app.css" rel="stylesheet">
+    <link href="http://localhost:8080/app.css" rel="stylesheet">
 </head>
 <body>
+<p id="error" class="mt-3"></p>
 <div id='password-container' class="text-center">
     <p>The URL is password protected please enter the password.</p>
     <input id="url-password" type="password"/>
-    <button id="submit-password"/>
+    <button id="submit-password">OK</button>
 </div>
-<div class="text-center">
-    <p>The password entered is wrong, please retry</p>
+<div id='not-found' class="text-center">
+    <p>The clipboard was not found, or is expired</p>
 </div>
-<div class="text-center">
+
+<div id ='clipboard-data' class="text-center">
     <form id="myForm">
         <h1 class="mt-2">Welcome to Clipboard Service</h1>
-        <textarea class='mt-2' id="clipboard-text" rows="8" cols="80"></textarea>
-        <table style="margin: auto">
+        <textarea name='textContent' class='mt-2' id="textContent" rows="8" cols="80"></textarea>
+        <table class="mt-1 text-left">
             <tr>
                 <td>
                     <label> Title </label>
                 </td>
                 <td>
-                    <input name="title" type="text"/>
+                    <input id="title" name="title" type="text"/>
                 </td>
             </tr>
             <tr>
@@ -34,7 +36,7 @@
                     <label> Expiration </label>
                 </td>
                 <td>
-                    <input name="expiration" type="date" class="w-100"/>
+                    <input id="expiresAt" name="expiresAt" type="date" class="w-100"/>
                 </td>
             </tr>
             <tr>
@@ -53,15 +55,18 @@
                     <label> Password </label>
                 </td>
                 <td>
-                    <input name="password" type="text"/>
+                    <input id="password" name="password" type="text"/>
                 </td>
             </tr>
+
+        </table>
+        <table class="mt-3">
             <tr>
                 <td>
-                    <button type="submit">Create</button>
+                    <button class='btn btn-primary' type="submit">Save</button>
                 </td>
                 <td>
-                    <button type="button" id="reset-btn">Reset</button>
+                    <button class='btn btn-secondary' type="button" id="reset-btn">Reset</button>
                 </td>
             </tr>
         </table>
@@ -69,12 +74,61 @@
     <div>
         <p id="tiny-url"></p>
     </div>
+
 </div>
 </body>
 <script>
     $(function(){
+        var href = window.location.href
+        var index = href.lastIndexOf("/") + 1
+        var hexId = href.substring(index)
+        $("#password-container").hide()
+        $("#clipboard-data").hide()
+        $("#not-found").hide()
+
+        fetchClipboardDetails();
+
+        function fetchClipboardDetails(payload) {
+            var onMountRequest = $.ajax({
+                url: `/b/${hexId}`,
+                type: "POST",
+                dataType: "json",
+                data: payload,
+                contentType: "application/json"
+            });
+
+            onMountRequest.done(function(data){
+                if (data.id) {
+                    setFormData(data)
+                    $("#clipboard-data").show()
+                    $("#error").hide()
+                    $("#password-container").hide()
+                } else if (data.askPassword) $("#password-container").show()
+                else if (data.notFound) $("#not-found").show()
+            })
+            onMountRequest.fail(function(res, textStatus) {
+                $('#error').html(res.responseJSON.message)
+                $('#error').show();
+            });
+        }
+
+        function setFormData(data) {
+            $('#textContent').val(data.textContent);
+            $('#title').val(data.title);
+            var expAt = new Date(data.expiresAt);
+            $('#expiresAt')[0].valueAsDate = expAt;
+            $('#exposure').val(data.exposure);
+            $('#password').val(data.password);
+        }
+
+        $('#submit-password').click(function(){
+            var pass = $('#url-password').val()
+            var object = {"password": pass}
+            var payload = JSON.stringify(object);
+            fetchClipboardDetails(payload)
+        })
+
         $('#exposure').change(function(event) {
-            console.log("here", event.target.value)
             if (event.target.value == 1) {
                 $('#password-row').show()
             } else {
@@ -91,52 +145,31 @@
             });
             var json = JSON.stringify(object);
             var request = $.ajax({
-                url: `/`,
-                type: "POST",
+                url: `/b/${hexId}`,
+                type: "PUT",
                 data: json,
                 dataType: "json",
                 contentType: "application/json"
             });
-
             request.done(function(data) {
-                console.log(data);
-                $("#tiny-url").html(`Clipboard created with URL - ${data.tinyURL}`)
+                $("#tiny-url").html(`Clipboard edited successfully`)
             });
-
-            request.fail(function(jqXHR, textStatus) {
-                alert( "Request failed: " + textStatus );
+            request.fail(function(res, textStatus) {
+                $('#error').html(res.responseJSON.message)
+                $('#error').show();
             });
         })
         $('#reset-btn').click(function() {
-            console.log("resetting")
             $("#myForm").trigger("reset");
             $("#tiny-url").html(``)
+            $("#tiny-url").attr("href", ``)
+            $("#tiny-url-container").hide()
+            $('#error').hide();
+            $("#password-row").hide();
         })
-
-
     });
 </script>
 </html>
 
 
 
-
-<script>
-    var hexId = window.location.href.substring(window.location.href.lastIndexOf('/') + 1)
-    console.log("making backend requeest")
-    var request = $.ajax({
-        url: `/b/${hexId}`,
-        type: "POST",
-        data: {password: "password"}
-    });
-
-    request.done(function(data) {
-        console.log(data);
-
-    });
-
-    request.fail(function(jqXHR, textStatus) {
-        alert( "Request failed: " + textStatus );
-    });
-
-</script>

@@ -1,3 +1,13 @@
-#clipboard-text {
-    //width: 500px;
+#error {
+    text-align: center;
+    color: red;
+    font-size: 20px;
+    font-weight: 600;
+}
+table {
+    margin: auto;
+}
+
+.text-left {
+    text-align: left;
 }
