@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="./app.css" rel="stylesheet">
+</head>
+<body>
+<div class="text-center">
+    <form id="myForm">
+    <h1 class="mt-2">Welcome to Clipboard Service</h1>
+    <textarea class='mt-2' id="clipboard-text" rows="8" cols="80"></textarea>
+    <table style="margin: auto">
+        <tr>
+            <td>
+                <label> Title </label>
+            </td>
+            <td>
+                <input name="title" type="text"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label> Expiration </label>
+            </td>
+            <td>
+                <input name="expiration" type="date" class="w-100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label> Exposure </label>
+            </td>
+            <td>
+                <select id="exposure" name="exposure" style="width: 100%">
+                    <option value=0>Public</option>
+                    <option value=1>Private</option>
+                </select>
+            </td>
+        </tr>
+        <tr id="password-row">
+            <td>
+                <label> Password </label>
+            </td>
+            <td>
+                <input name="password" type="text"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="submit">Create</button>
+            </td>
+            <td>
+                <button type="button" id="reset-btn">Reset</button>
+            </td>
+        </tr>
+    </table>
+    </form>
+    <div>
+        <p id="tiny-url"></p>
+    </div>
+</div>
+</body>
+<script>
+    $(function(){
+        $('#exposure').change(function(event) {
+            console.log("here", event.target.value)
+            if (event.target.value == 1) {
+                $('#password-row').show()
+            } else {
+                $('#password-row').hide()
+            }
+        })
+        $('#password-row').hide();
+        $('#myForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(document.getElementById("myForm"));
+            var object = {};
+            formData.forEach(function(value, key){
+                object[key] = value;
+            });
+            var json = JSON.stringify(object);
+            var request = $.ajax({
+                url: `/`,
+                type: "POST",
+                data: json,
+                dataType: "json",
+                contentType: "application/json"
+            });
+
+            request.done(function(data) {
+                console.log(data);
+                $("#tiny-url").html(`Clipboard created with URL - ${data.tinyURL}`)
+            });
+
+            request.fail(function(jqXHR, textStatus) {
+                alert( "Request failed: " + textStatus );
+            });
+        })
+        $('#reset-btn').click(function() {
+            console.log("resetting")
+            $("#myForm").trigger("reset");
+            $("#tiny-url").html(``)
+        })
+
+
+    });
+</script>
+</html>
+
