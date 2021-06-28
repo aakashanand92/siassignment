@@ -17,6 +17,24 @@ To download all dependencies -
 ```
 mvn clean install -U
 ```
+
+
+
+## DB Setup -
+
+This is project is configured to use MySQL as a database ,  
+
+Default Settings -  
+db - siassignment  
+url - localhost:3306  
+username - root  
+password - password
+
+
+You can always change it, just make sure to update the application.properties with the new values.
+
+## PACKAGE AND RUN -
+
 To package and make jar file -
 
 ```
@@ -34,16 +52,10 @@ java -jar target/siassignment-<version>-SNAPSHOT.jar
 Now you can access the UI at -  
 http://localhost:8080/
 
+## STATS APIs -
 
-## DB Setup -
+The API's need token to be accessed. You can set this token in application.properties file. There is a default token given.
 
-This is project is configured to use MySQL as a database ,  
+You get stats for a particular clipboard you can make a GET request to - http://localhost:8080/b/<hexId>/stats
 
-Default Settings -  
-db - siassignment  
-url - localhost:3306  
-username - root  
-password - password
-
-
-You can always change it, just make sure to update the application.properties with the new values.
+To get system stats you can make GET request to - http://localhost:8080/stats
