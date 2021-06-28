@@ -56,7 +56,7 @@ http://localhost:8080/
 
 The API's need token to be accessed. You can set this token in application.properties file. There is a default token given.
 
-Set it in your request header with key - token
+Set it in your request header with key - "token"
 
 You get stats for a particular clipboard you can make a GET request to - http://localhost:8080/b/{hexId}/stats
 
