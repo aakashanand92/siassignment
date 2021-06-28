@@ -12,7 +12,7 @@ This is a maven project, so after cloning the data, you need to import the depen
 
 Download maven on your system
 
-To download all dependencies -
+To download all dependencies (Inside project directory) -
 
 ```
 mvn clean install -U
