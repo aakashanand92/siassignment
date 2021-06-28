@@ -33,7 +33,7 @@ password - password
 
 You can always change it, just make sure to update the application.properties with the new values.
 
-## PACKAGE AND RUN -
+## Package and Run -
 
 To package and make jar file -
 
@@ -52,7 +52,7 @@ java -jar target/siassignment-<version>-SNAPSHOT.jar
 Now you can access the UI at -  
 http://localhost:8080/
 
-## STATS APIs -
+## Stats APIs -
 
 The API's need token to be accessed. You can set this token in application.properties file. There is a default token given.
 
